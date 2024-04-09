@@ -2,7 +2,7 @@ package me.youhavetrouble.propaganda.messages;
 
 import net.kyori.adventure.audience.Audience;
 
-public interface SendableAnnouncement {
+public interface Announcement {
 
     void send(Audience audience);
 
