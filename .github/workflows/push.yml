@@ -1,6 +1,9 @@
 # Builds the jar and uploads it as an artifact
 name: Build commit
-on: [push]
+on:
+  push:
+    branches:
+      - "master"
 jobs:
   build:
     runs-on: ubuntu-latest
