@@ -1,6 +1,6 @@
 package me.youhavetrouble.propaganda.messages;
 
-public enum MessageType {
+public enum AnnouncementType {
 
     CHAT, TITLE, ACTIONBAR, BOSSBAR,
 

@@ -2,6 +2,7 @@ package me.youhavetrouble.propaganda;
 
 import com.google.inject.Inject;
 import com.moandjiezana.toml.Toml;
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
@@ -11,6 +12,10 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import me.youhavetrouble.propaganda.command.AnnounceCommand;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.SenderMapper;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.velocity.VelocityCommandManager;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -38,6 +43,8 @@ public class Propaganda {
 
     private PropagandaConfig config;
 
+    private CommandManager<CommandSource> commandManager;
+
     @Inject
     public Propaganda(ProxyServer server, @DataDirectory final Path configFolder) {
         this.server = server;
@@ -46,7 +53,13 @@ public class Propaganda {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        server.getCommandManager().register(AnnounceCommand.createCommand(this));
+        this.commandManager = new VelocityCommandManager<>(
+                server.getPluginManager().ensurePluginContainer(this),
+                server,
+                ExecutionCoordinator.asyncCoordinator(),
+                SenderMapper.identity()
+        );
+        AnnounceCommand.createCommand(this);
         reloadPlugin();
     }
 
@@ -92,5 +105,13 @@ public class Propaganda {
         Component base = Component.empty();
         if (config == null) return null;
         return base.append(config.prefix).append(component);
+    }
+
+    public CommandManager<CommandSource> getCommandManager() {
+        return commandManager;
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 }

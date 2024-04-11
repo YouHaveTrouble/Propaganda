@@ -23,7 +23,6 @@ public class TitleAnnouncement implements Announcement {
     @Override
     public void send(Audience audience) {
         audience.showTitle(title);
-        audience.resetTitle();
     }
 
     public static class Builder {
