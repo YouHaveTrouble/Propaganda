@@ -22,4 +22,4 @@ to all servers under the proxy. This flag is repeatable.
 Announcements support [MiniMessage](https://docs.adventure.kyori.net/minimessage.html) formatting.
 
 Only `chat` announcements support `<newline>` tag, as no other type of announcement supports multiline messages. The
-`<newline` tag will be silently removed from any other type of announcement for compatibility.
+`<newline>` tag will be silently removed from any other type of announcement for compatibility.
