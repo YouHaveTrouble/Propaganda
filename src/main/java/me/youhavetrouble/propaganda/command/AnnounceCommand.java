@@ -12,13 +12,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.CommandManager;
+import org.incendo.cloud.component.DefaultValue;
 import org.incendo.cloud.description.Description;
 import org.incendo.cloud.parser.flag.CommandFlag;
+import org.incendo.cloud.parser.standard.EnumParser;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.permission.Permission;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 public class AnnounceCommand {
@@ -27,14 +28,21 @@ public class AnnounceCommand {
         CommandManager<CommandSource> commandManager = plugin.getCommandManager();
         Command<CommandSource> command = commandManager
                 .commandBuilder("announce")
+                .commandDescription(Description.of("Send an announcement"))
                 .flag(CommandFlag.builder("type")
                         .withPermission(Permission.permission("propaganda.announce.type"))
                         .withAliases("t")
                         .asRepeatable()
                         .withDescription(Description.of("The type of announcement to send"))
-                        .withComponent(StringParser.stringComponent(StringParser.StringMode.SINGLE).name("type").build())
+                        .withComponent(
+                                EnumParser.enumComponent(AnnouncementType.class)
+                                        .name("type")
+                                        .description(Description.of("The type of announcement to send"))
+                                        .optional(DefaultValue.constant(AnnouncementType.CHAT))
+                                        .build()
+                        )
                 )
-                .required("message", StringParser.greedyFlagYieldingStringParser())
+                .required("message", StringParser.quotedStringParser())
                 .handler(context -> {
                     Audience audience = plugin.getServer();
                     String message = context.get("message");
@@ -47,7 +55,8 @@ public class AnnounceCommand {
                         context.flags().getAll("type").forEach(type -> {
                             try {
                                 types.add(AnnouncementType.valueOf(type.toString().toUpperCase()));
-                            } catch (IllegalArgumentException ignored) {}
+                            } catch (IllegalArgumentException ignored) {
+                            }
                         });
 
                         if (types.isEmpty()) {
@@ -77,7 +86,8 @@ public class AnnounceCommand {
                     new ChatAnnouncement.Builder(messageComponent)
                             .prefix(plugin.getConfig().prefix)
                             .build()
-                            .send(context.sender());
+                            .send(audience);
+
 
                 })
                 .build();
