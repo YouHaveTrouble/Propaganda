@@ -11,6 +11,8 @@ An announcement plugin for [Velocity](https://papermc.io/software/velocity) prox
 - `<message>`: The message to announce. Must be enclosed in double quotes.
 - `[flags]`: Optional flags to customize the announcement.
 
+Permission required to use the command: `propaganda.announce`
+
 ### Flags
 
 - `--type` or `-t` : Type of the announcement. Possible values are `chat`, `title` and `actionbar`. If no type is
