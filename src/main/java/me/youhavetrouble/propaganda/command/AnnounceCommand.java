@@ -16,7 +16,6 @@ import org.incendo.cloud.description.Description;
 import org.incendo.cloud.parser.standard.StringParser;
 import java.util.*;
 
-
 public class AnnounceCommand {
 
     public static void createCommand(Propaganda plugin) {
@@ -24,8 +23,8 @@ public class AnnounceCommand {
         Command<CommandSource> command = commandManager
                 .commandBuilder("announce")
                 .commandDescription(Description.of("Send an announcement"))
-                .flag(CommandUtil.getAnnouncementTypeFlag())
-                .flag(CommandUtil.getServerFlag())
+                .flag(CommandUtil.ANNOUNCEMENT_TYPE_FLAG)
+                .flag(CommandUtil.SERVER_FLAG)
                 .required("message", StringParser.quotedStringParser())
                 .handler(context -> {
                     String message = context.get("message");

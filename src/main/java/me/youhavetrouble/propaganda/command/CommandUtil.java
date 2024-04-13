@@ -20,11 +20,32 @@ import java.util.Set;
 
 public class CommandUtil {
 
+    public static final CommandFlag<AnnouncementType> ANNOUNCEMENT_TYPE_FLAG = CommandFlag.builder("type")
+            .withPermission(Permission.permission("propaganda.announce.type"))
+            .withAliases("t")
+            .asRepeatable()
+            .withDescription(Description.of("The type of announcement to send"))
+            .withComponent(
+                    EnumParser.enumComponent(AnnouncementType.class)
+                            .name("type")
+                            .description(Description.of("The type of announcement to send"))
+                            .optional(DefaultValue.constant(AnnouncementType.CHAT))
+                            .build()
+            )
+            .build();
+
+    public static final CommandFlag<RegisteredServer> SERVER_FLAG = CommandFlag.builder("server")
+            .withPermission(Permission.permission("propaganda.announce.server"))
+            .withAliases("s")
+            .asRepeatable()
+            .withDescription(Description.of("Server to send the announcement to"))
+            .withComponent(ServerParser.serverParser())
+            .build();
+
     /**
      * Retrieves the audience based on the given starting audience and command context.
-     *
      * @param startingAudience The starting audience to filter.
-     * @param context          The command context.
+     * @param context The command context.
      * @return The filtered audience based on the command context, or null if no servers are specified.
      */
     @Nullable
@@ -53,7 +74,6 @@ public class CommandUtil {
 
     /**
      * Retrieves the announcement types based on the given command context.
-     *
      * @param context The command context.
      * @return A set of announcement types based on the command context.
      * If no type flag was provided it defaults to chat type.
@@ -65,32 +85,6 @@ public class CommandUtil {
         }
         if (types.isEmpty()) types.add(AnnouncementType.CHAT);
         return types;
-    }
-
-    public static CommandFlag<AnnouncementType> getAnnouncementTypeFlag() {
-        return CommandFlag.builder("type")
-                .withPermission(Permission.permission("propaganda.announce.type"))
-                .withAliases("t")
-                .asRepeatable()
-                .withDescription(Description.of("The type of announcement to send"))
-                .withComponent(
-                        EnumParser.enumComponent(AnnouncementType.class)
-                                .name("type")
-                                .description(Description.of("The type of announcement to send"))
-                                .optional(DefaultValue.constant(AnnouncementType.CHAT))
-                                .build()
-                )
-                .build();
-    }
-
-    public static CommandFlag<RegisteredServer> getServerFlag() {
-        return CommandFlag.builder("server")
-                .withPermission(Permission.permission("propaganda.announce.server"))
-                .withAliases("s")
-                .asRepeatable()
-                .withDescription(Description.of("Send the announcement to the server"))
-                .withComponent(ServerParser.serverParser())
-                .build();
     }
 
 }
