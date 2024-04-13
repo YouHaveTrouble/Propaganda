@@ -2,6 +2,9 @@ package me.youhavetrouble.propaganda.command;
 
 
 import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.api.proxy.ServerConnection;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import me.youhavetrouble.propaganda.Propaganda;
 import me.youhavetrouble.propaganda.messages.ActionbarAnnouncement;
 import me.youhavetrouble.propaganda.messages.AnnouncementType;
@@ -18,6 +21,7 @@ import org.incendo.cloud.parser.flag.CommandFlag;
 import org.incendo.cloud.parser.standard.EnumParser;
 import org.incendo.cloud.parser.standard.StringParser;
 import org.incendo.cloud.permission.Permission;
+import org.incendo.cloud.velocity.parser.ServerParser;
 
 import java.util.*;
 
@@ -42,12 +46,40 @@ public class AnnounceCommand {
                                         .build()
                         )
                 )
+                .flag(CommandFlag.builder("server")
+                        .withPermission(Permission.permission("propaganda.announce.server"))
+                        .withAliases("s")
+                        .asRepeatable()
+                        .withDescription(Description.of("Send the announcement to the server"))
+                        .withComponent(ServerParser.serverParser())
+                        .build()
+                )
                 .required("message", StringParser.quotedStringParser())
                 .handler(context -> {
                     Audience audience = plugin.getServer();
                     String message = context.get("message");
                     Component messageComponent = MiniMessage.miniMessage().deserialize(message);
                     Component noNewlineMessageComponent = MiniMessage.miniMessage().deserialize(message.replace("<newline>", ""));
+
+                    if (context.flags().isPresent("server")) {
+                        Set<RegisteredServer> servers = new HashSet<>();
+                        context.flags().getAll("server").forEach(server -> servers.add((RegisteredServer) server));
+                        if (servers.isEmpty()) {
+                            context.sender().sendMessage(Component.text("No valid server specified"));
+                            return;
+                        }
+                        audience = audience.filterAudience(aud -> {
+                            if (aud instanceof Player player) {
+                                ServerConnection server = player.getCurrentServer().orElse(null);
+                                if (server == null) return false;
+                                RegisteredServer registeredServer = server.getServer();
+                                if (registeredServer == null) return false;
+
+                                return servers.contains(registeredServer);
+                            }
+                            return false;
+                        });
+                    }
 
                     if (context.flags().isPresent("type")) {
                         Set<AnnouncementType> types = new HashSet<>();
