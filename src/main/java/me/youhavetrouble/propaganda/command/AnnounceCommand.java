@@ -23,6 +23,7 @@ public class AnnounceCommand {
         Command<CommandSource> command = commandManager
                 .commandBuilder("announce")
                 .commandDescription(Description.of("Send an announcement"))
+                .permission("propaganda.announce")
                 .flag(CommandUtil.ANNOUNCEMENT_TYPE_FLAG)
                 .flag(CommandUtil.SERVER_FLAG)
                 .required("message", StringParser.quotedStringParser())
